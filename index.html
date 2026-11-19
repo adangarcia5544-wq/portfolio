@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ✏️ PLANTILLA: busca los comentarios "✏️" para ver todo lo que tienes que cambiar -->
+<title>ADN | Editor de Video</title>
+<link rel="icon" type="image/jpeg" href="images/marca/avatar.jpg">
+
+<!-- ✏️ Vista previa al compartir el enlace: cambia tudominio.com por tu dominio y la imagen images/marca/og-image.jpg (1200x630) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tudominio.com/">
+<meta property="og:title" content="ADN | Editor de Video">
+<meta property="og:description" content="ADN — Editor de video. Transformando ideas en experiencias visuales.">
+<meta property="og:image" content="https://tudominio.com/images/marca/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://tudominio.com/">
+<meta name="twitter:title" content="ADN | Editor de Video">
+<meta name="twitter:description" content="ADN — Editor de video. Transformando ideas en experiencias visuales.">
+<meta name="twitter:image" content="https://tudominio.com/images/marca/og-image.jpg">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- ✏️ FUENTES: el original usaba un kit privado de Adobe Fonts (neue-haas-grotesk-text + widescreen).
+     Aquí se sustituyen por fuentes gratuitas de Google (Inter + Archivo expandida).
+     Si tienes Adobe Fonts, crea tu propio kit en fonts.adobe.com y añade aquí su <link>. -->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@125,900&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ✏️ COLORES: cambia --accent (y --accent-rgb) para usar tu color de marca */
+  :root{
+    --bg:#0b0b0c;
+    --bg-elev:#141417;
+    --bg-elev-2:#1c1c20;
+    --fg:#f5f4f2;
+    --fg-dim:#9b9ba1;
+    --fg-faint:#5a5a60;
+    --accent:#9333EA;
+    --accent-bright:#9333EA;
+    --accent-light:#9333EA;
+    --accent-deep:#4C1D95;
+    --accent-rgb:147,51,234;
+    --line:rgba(255,255,255,.12);
+    --line-strong:rgba(255,255,255,.24);
+    --font-display:"Anton",impact,sans-serif;
+    --track-display:.035em;
+    --font-sans:"neue-haas-grotesk-text","Inter",system-ui,sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,monospace;
+    --text-display-1:clamp(3rem,12vw,11rem);
+    --text-display-2:clamp(2rem,6vw,5rem);
+    --text-display-3:clamp(1.5rem,3.5vw,2.75rem);
+    --text-body:clamp(1rem,1.1vw,1.125rem);
+    --text-small:.875rem;
+    --text-label:.6875rem;
+    --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px;
+    --space-6:32px; --space-7:48px; --space-8:64px; --space-9:96px; --space-10:128px; --space-11:192px;
+    --radius-sm:2px; --radius:4px; --radius-lg:8px;
+    --container:1440px;
+    --gutter:clamp(16px,5vw,96px);
+    --nav-h:64px;
+    --ease-out:cubic-bezier(.16,1,.3,1);
+    --ease-inout:cubic-bezier(.65,.05,.36,1);
+    --dur-fast:.2s; --dur:.5s; --dur-slow:.8s;
+    scrollbar-color:#2a2a2e var(--bg);
+  }
+  html{background:var(--bg);}
+  body{
+    min-height:100svh;
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(ellipse 70% 45% at 50% 0%, rgba(76,29,149,.6), transparent 70%),
+      radial-gradient(ellipse 55% 40% at 90% 35%, rgba(76,29,149,.4), transparent 70%),
+      radial-gradient(ellipse 60% 45% at 5% 70%, rgba(76,29,149,.45), transparent 70%),
+      radial-gradient(ellipse 65% 40% at 95% 100%, rgba(76,29,149,.4), transparent 70%);
+    background-attachment:fixed;
+    color:var(--fg);
+    font-family:var(--font-sans);
+    font-size:var(--text-body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    margin:0;
+  }
+  .font-display{font-family:var(--font-display);letter-spacing:var(--track-display);text-transform:uppercase;}
+  .font-mono{font-family:var(--font-mono);}
+  .container-x{width:100%;max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter);box-sizing:border-box;}
+  .label-eyebrow{font-family:var(--font-mono);font-size:var(--text-label);letter-spacing:.12em;color:var(--accent);text-transform:uppercase;}
+  .underline-link{position:relative;display:inline-block;font-family:var(--font-mono);font-size:var(--text-label);letter-spacing:.1em;text-transform:uppercase;padding-bottom:var(--space-2);border-bottom:1px solid var(--line-strong);color:var(--fg);}
+  .underline-link:hover{color:var(--accent-bright);border-color:var(--accent);}
+  .card{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius-lg);}
+  .tag-pill{font-family:var(--font-mono);font-size:.625rem;letter-spacing:.08em;text-transform:uppercase;background:rgba(11,11,12,.72);color:var(--fg);padding:3px 8px;border-radius:var(--radius-sm);backdrop-filter:blur(4px);}
+  .avatar-ring{border:1px solid var(--line);border-radius:9999px;object-fit:cover;background:var(--bg-elev-2);}
+  .clientes-fade{-webkit-mask-image:linear-gradient(to right, transparent 0, black 140px, black calc(100% - 140px), transparent 100%);mask-image:linear-gradient(to right, transparent 0, black 140px, black calc(100% - 140px), transparent 100%);}
+  @keyframes verified-blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .btn-glow{transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease, border-color .25s ease;}
+  .btn-glow:hover{transform:scale(1.08);box-shadow:0 0 0 4px rgba(168,85,247,.22), 0 0 28px 4px rgba(168,85,247,.65);border-color:transparent;}
+
+  /* GLASS BUTTON */
+  .btn-glass{
+    background:rgba(255,255,255,.1);
+    backdrop-filter:blur(14px) saturate(160%);
+    -webkit-backdrop-filter:blur(14px) saturate(160%);
+    border:1px solid rgba(255,255,255,.35);
+    color:#fff;
+    transition:background .25s ease, border-color .25s ease;
+  }
+  .btn-glass:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.55);}
+
+  /* LANGUAGE TOGGLE — nav pill */
+  .lang-btn{background:transparent;border:none;color:var(--fg-dim);cursor:pointer;font-family:var(--font-sans);transition:background .2s ease, color .2s ease;}
+  .lang-btn.lang-active{background:var(--accent);color:#fff;}
+
+  /* FIRE IGNITION — CTA buttons */
+  .btn-fire{position:relative;isolation:isolate;}
+  @keyframes fire-jitter{
+    0%,100%{transform:scale(1.08) translate(0,0);}
+    25%{transform:scale(1.08) translate(-.6px,-.5px);}
+    50%{transform:scale(1.08) translate(.6px,.4px);}
+    75%{transform:scale(1.08) translate(-.4px,.6px);}
+  }
+  .btn-fire.btn-glow:hover{
+    animation:fire-jitter .16s linear infinite;
+    border-color:transparent;
+    background:linear-gradient(135deg,#7C3AED,#E9D5FF) !important;
+    box-shadow:0 0 0 3px rgba(147,51,234,.35), 0 0 26px 6px rgba(147,51,234,.6), 0 0 48px 16px rgba(233,213,255,.35) !important;
+  }
+  .fire-canvas{position:absolute;pointer-events:none;z-index:-1;left:50%;top:0;transform:translateX(-50%);}
+
+  /* MAGNETIC BLUE WORD — white capsule with radiant glow.
+     The capsule is painted on a ::before pseudo-element (position:absolute,
+     negative inset) so it never changes the span's own box size — hovering
+     near the edge can't trigger a resize→mouseleave→mouseenter flicker loop. */
+  .magnetic-blue-word{
+    position:relative;
+    display:inline-block;
+    color:var(--accent);
+    white-space:nowrap;
+    transition:color .3s ease;
+    z-index:0;
+  }
+  .magnetic-blue-word::before{
+    content:"";
+    position:absolute;
+    inset:-.05em -.25em;
+    border-radius:.2em;
+    background:transparent;
+    box-shadow:0 0 0 0 rgba(255,255,255,0);
+    transition:background .4s cubic-bezier(.16,1,.3,1), box-shadow .4s cubic-bezier(.16,1,.3,1);
+    z-index:-1;
+    pointer-events:none;
+  }
+  .magnetic-blue-word:hover{ color:#7E22CE; }
+  .magnetic-blue-word:hover::before{
+    background:#fff;
+    box-shadow:0 0 8px 1px rgba(255,255,255,.25);
+  }
+  .skool-brand{transition:color .35s cubic-bezier(.16,1,.3,1);}
+  .magnetic-blue-word:hover .skool-brand{color:#7E22CE !important;}
+
+  /* project & testimonial cards — positioning context (white sweep removed) */
+  .shimmer-card{position:relative;overflow:hidden;}
+
+  /* SMOOTH POP — video project cards */
+  #proyectos-grid article{transition:transform .4s cubic-bezier(.16,1,.3,1), opacity .6s ease;}
+  #proyectos-grid article:hover{transform:translateY(-6px) scale(1.04);}
+
+  /* SMOOTH POP — "Mis Clientes" carousel pills */
+  .client-pill{transition:transform .3s cubic-bezier(.16,1,.3,1);}
+  .client-pill:hover{transform:scale(1.08);}
+
+  /* SCROLL DOWN INDICATOR — hero chevrons */
+  .scroll-chevrons svg{display:block;filter:drop-shadow(0 0 6px rgba(255,255,255,.55));animation:scroll-chevron-pulse 1.8s ease-in-out infinite;}
+  .scroll-chevrons svg:nth-child(1){animation-delay:0s;}
+  .scroll-chevrons svg:nth-child(2){animation-delay:.18s;}
+  .scroll-chevrons svg:nth-child(3){animation-delay:.36s;}
+  @keyframes scroll-chevron-pulse{0%,100%{opacity:0;}50%{opacity:.4;}}
+
+  /* EQUALIZER BARS — video play button */
+  .eq-bar{width:3px;background:#fff;border-radius:2px;animation:eq-bounce .9s ease-in-out infinite;}
+  .eq-bar:nth-child(1){animation-delay:0s;}
+  .eq-bar:nth-child(2){animation-delay:.15s;}
+  .eq-bar:nth-child(3){animation-delay:.3s;}
+  .eq-bar:nth-child(4){animation-delay:.45s;}
+  @keyframes eq-bounce{0%,100%{height:4px;}50%{height:16px;}}
+
+  /* ===== PURPLE SCROLLBAR ===== */
+  ::-webkit-scrollbar{width:12px;height:12px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--accent-deep);border-radius:8px;border:3px solid var(--bg);}
+  ::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+  /* ===== SPOTLIGHT — soft radial glow that tracks the cursor, BEHIND the section content =====
+     z-index:-1 + isolation on the zone keeps the glow behind the in-flow cards/text (which stay
+     opaque and occlude it), so it backlights them and bleeds through the gutters/margins instead
+     of washing over the top. */
+  .spotlight-zone{position:relative;isolation:isolate;}
+  .spotlight{
+    position:absolute;inset:0;z-index:-1;pointer-events:none;
+    opacity:0;transition:opacity .45s ease;
+    mix-blend-mode:screen;
+    background:radial-gradient(circle 360px at var(--mx,50%) var(--my,38%),
+      rgba(192,132,252,.45), rgba(168,85,247,.16) 42%, transparent 70%);
+  }
+  .spotlight-zone:hover .spotlight{opacity:1;}
+
+  /* ===== REVEAL ON SCROLL ===== */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .75s var(--ease-out), transform .75s var(--ease-out);}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* ===== HERO ENTRANCE STAGGER ===== */
+  @keyframes hero-in{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:none;}}
+  #hero-content .container-x.text-center > h1,
+  #hero-content .container-x.text-center > p,
+  #hero-content .container-x.text-center > div{animation:hero-in .9s var(--ease-out) both;}
+  #hero-content .container-x.text-center > p{animation-delay:.12s;}
+  #hero-content .container-x.text-center > div:nth-of-type(1){animation-delay:.24s;}
+  #hero-content .container-x.text-center > div:nth-of-type(2){animation-delay:.36s;}
+
+  /* ===== CONTACT BUTTONS — bar expand + arrow nudge on hover ===== */
+  .contact-bar{transition:width .45s var(--ease-out);}
+  #contacto a:hover .contact-bar{width:100%;}
+  .contact-arrow{display:inline-flex;transition:transform .3s var(--ease-out);}
+  #contacto a:hover .contact-arrow{transform:translate(3px,-3px);}
+</style>
+</head>
+<body class="antialiased">
+
+<script>
+  let currentLang = 'es';
+</script>
+
+<!-- REVEAL-ON-SCROLL — observer defined early so JS-generated cards can register -->
+<script>
+  window.__revealIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add('in'); window.__revealIO.unobserve(en.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  window.__observeReveals = function (root) {
+    (root || document).querySelectorAll('.reveal:not(.in)').forEach(function (el) {
+      window.__revealIO.observe(el);
+    });
+  };
+</script>
+
+<!-- NAV -->
+<header class="fixed top-0 left-0 right-0 z-50 px-4 pt-4">
+  <div class="mx-auto flex items-center justify-between gap-3 sm:gap-6 rounded-full px-3 sm:px-4 py-3" style="max-width:1040px;background:rgba(11,11,12,.38);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);border:1px solid rgba(255,255,255,.14)">
+    <a href="#reel" class="flex items-center gap-3 shrink-0">
+      <img src="images/marca/avatar.jpg" alt="ADN" class="w-11 h-11 rounded-full object-cover" style="border:1px solid var(--line-strong)">
+      <!-- ✏️ Tu foto: reemplaza images/marca/avatar.jpg (cuadrada) y tu nombre aquí -->
+      <span class="font-bold text-white text-base whitespace-nowrap">ADN</span>
+    </a>
+    <nav class="hidden lg:flex items-center gap-6">
+      <a href="#proyectos" class="text-base text-[var(--fg-dim)] hover:text-white transition-colors" data-es="Trabajos" data-en="Work">Trabajos</a>
+      <a href="#clientes" class="text-base text-[var(--fg-dim)] hover:text-white transition-colors" data-es="Clientes" data-en="Clients">Clientes</a>
+      <a href="#contacto" class="text-base text-[var(--fg-dim)] hover:text-white transition-colors" data-es="Contacto" data-en="Contact">Contacto</a>
+    </nav>
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div class="flex items-center gap-1 rounded-full p-0.5" style="background:rgba(255,255,255,.06);border:1px solid var(--line)">
+        <button id="lang-es-btn" type="button" onclick="applyLanguage('es')" class="lang-btn lang-active rounded-full px-2.5 py-1 text-xs font-bold">ES</button>
+        <button id="lang-en-btn" type="button" onclick="applyLanguage('en')" class="lang-btn rounded-full px-2.5 py-1 text-xs font-bold">EN</button>
+      </div>
+      <a href="#proyectos" class="btn-glow shrink-0 hidden lg:inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-base font-medium border text-[var(--fg-dim)] hover:text-white transition-colors" style="border-color:var(--line)" data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</a>
+      <a href="https://x.com/adangarcia5544" target="_blank" rel="noopener" class="btn-glow btn-fire shrink-0 inline-flex items-center gap-1.5 rounded-full pl-4 pr-3 sm:pl-5 sm:pr-4 py-2 sm:py-2.5 text-sm sm:text-base font-medium text-white" style="background:var(--accent)">
+        <span class="hidden sm:inline" data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</span><span class="sm:hidden" data-es="Hablemos" data-en="Let's talk">Hablemos</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO / REEL -->
+<section id="reel" class="relative overflow-hidden min-h-screen flex flex-col">
+  <div id="hero-bg-wrap" class="absolute inset-0 overflow-hidden">
+    <!-- ✏️ Vídeo de fondo: reemplaza video/hero-bg.mp4 (y su miniatura images/hero-video-poster.jpg) por el tuyo -->
+    <video autoplay muted loop playsinline poster="images/hero-video-poster.jpg" class="w-full h-full object-cover scale-110" style="filter:blur(4px) brightness(.5);">
+      <source src="video/hero-bg.mp4" type="video/mp4">
+    </video>
+    <div class="absolute inset-0" style="background:rgba(76,29,149,.35)"></div>
+    <div class="absolute inset-0" style="background-image:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size:42px 42px;"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(11,11,12,.15) 0%, rgba(11,11,12,.55) 55%, var(--bg) 100%)"></div>
+  </div>
+
+  <div class="container-x pt-32 relative"></div>
+
+  <div id="hero-content" class="relative flex-1 flex flex-col py-16">
+    <div class="flex-1 flex flex-col justify-center">
+      <div class="container-x text-center py-16">
+        <h1 class="font-display leading-[0.85] text-white flex items-center justify-center gap-4 flex-nowrap whitespace-nowrap" style="font-size:var(--text-display-1)">
+          <!-- ✏️ Tu nombre grande. La palabra azul es la que va dentro de magnetic-blue-word -->
+          <span>ADN <span class="magnetic-blue-word">EDITOR</span></span>
+          <svg id="verified-badge" width="0.6em" height="0.6em" viewBox="0 0 24 24" fill="#C084FC" style="animation:verified-blink 2.4s ease-in-out infinite;">
+            <path d="M22.550 12.000 C22.550 12.321 22.320 12.670 22.079 12.962 C21.839 13.255 21.372 13.500 21.107 13.755 C20.843 14.010 20.574 14.211 20.492 14.493 C20.409 14.775 20.526 15.089 20.611 15.447 C20.695 15.805 20.955 16.263 20.999 16.640 C21.044 17.016 21.049 17.434 20.875 17.704 C20.702 17.974 20.319 18.143 19.959 18.259 C19.598 18.375 19.073 18.329 18.713 18.400 C18.352 18.472 18.018 18.496 17.796 18.688 C17.573 18.881 17.502 19.209 17.380 19.555 C17.258 19.902 17.229 20.428 17.063 20.769 C16.896 21.109 16.674 21.463 16.383 21.597 C16.091 21.730 15.678 21.665 15.312 21.568 C14.946 21.471 14.529 21.148 14.187 21.014 C13.845 20.879 13.550 20.718 13.259 20.760 C12.969 20.802 12.732 21.039 12.441 21.264 C12.151 21.490 11.842 21.917 11.518 22.114 C11.194 22.310 10.816 22.488 10.499 22.443 C10.181 22.397 9.868 22.119 9.613 21.840 C9.358 21.560 9.181 21.063 8.966 20.765 C8.752 20.467 8.591 20.172 8.324 20.050 C8.056 19.928 7.729 19.999 7.363 20.032 C6.996 20.065 6.505 20.257 6.127 20.248 C5.748 20.238 5.334 20.183 5.091 19.973 C4.849 19.763 4.736 19.360 4.672 18.987 C4.609 18.614 4.729 18.100 4.709 17.733 C4.690 17.366 4.714 17.032 4.555 16.785 C4.396 16.537 4.082 16.420 3.756 16.250 C3.430 16.080 2.913 15.976 2.600 15.763 C2.287 15.550 1.968 15.280 1.877 14.972 C1.787 14.664 1.910 14.265 2.058 13.916 C2.206 13.568 2.585 13.201 2.767 12.882 C2.949 12.562 3.150 12.294 3.150 12.000 C3.150 11.706 2.949 11.438 2.767 11.118 C2.585 10.799 2.206 10.432 2.058 10.084 C1.910 9.735 1.787 9.336 1.877 9.028 C1.968 8.720 2.287 8.450 2.600 8.237 C2.913 8.024 3.430 7.920 3.756 7.750 C4.082 7.580 4.396 7.463 4.555 7.215 C4.714 6.968 4.690 6.634 4.709 6.267 C4.729 5.900 4.609 5.386 4.672 5.013 C4.736 4.640 4.849 4.237 5.091 4.027 C5.334 3.817 5.748 3.762 6.127 3.752 C6.505 3.743 6.996 3.935 7.362 3.968 C7.729 4.001 8.056 4.072 8.324 3.950 C8.591 3.828 8.752 3.533 8.966 3.235 C9.181 2.937 9.358 2.440 9.613 2.160 C9.868 1.881 10.181 1.603 10.499 1.557 C10.816 1.512 11.194 1.690 11.518 1.886 C11.842 2.083 12.151 2.510 12.441 2.736 C12.732 2.961 12.969 3.198 13.259 3.240 C13.550 3.282 13.845 3.121 14.187 2.986 C14.529 2.852 14.946 2.529 15.312 2.432 C15.678 2.335 16.091 2.270 16.383 2.403 C16.674 2.537 16.896 2.891 17.063 3.231 C17.229 3.572 17.258 4.098 17.380 4.445 C17.502 4.791 17.573 5.119 17.796 5.312 C18.018 5.504 18.352 5.528 18.713 5.600 C19.073 5.671 19.598 5.625 19.959 5.741 C20.319 5.857 20.702 6.026 20.875 6.296 C21.049 6.566 21.044 6.984 20.999 7.360 C20.955 7.737 20.695 8.195 20.611 8.553 C20.526 8.911 20.409 9.225 20.492 9.507 C20.574 9.789 20.843 9.990 21.107 10.245 C21.372 10.500 21.839 10.745 22.079 11.038 C22.320 11.330 22.550 11.679 22.550 12.000Z"/>
+            <path d="M8.5 12.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </h1>
+        <p class="mt-5 max-w-xl mx-auto text-[var(--fg)]" style="font-size:var(--text-body)" data-es="Transformando ideas en experiencias visuales." data-en="Turning ideas into visual experiences.">Transformando ideas en experiencias visuales.</p>
+        <div class="mt-8 flex items-center justify-center gap-3 flex-wrap">
+          <a href="https://x.com/adangarcia5544" target="_blank" rel="noopener" class="btn-glow btn-fire inline-flex items-center gap-2 rounded-full px-8 py-4 text-white font-medium" style="background:var(--accent)" data-es="TRABAJEMOS JUNTOS 🔥" data-en="LET'S WORK TOGETHER 🔥">
+            TRABAJEMOS JUNTOS 🔥
+          </a>
+          <a href="#proyectos" class="btn-glow btn-glass inline-flex items-center gap-2 rounded-full px-8 py-4 font-medium" data-es="Ver trabajo" data-en="See work">Ver trabajo</a>
+        </div>
+        <div class="scroll-chevrons mt-5 flex flex-col items-center" style="gap:2px">
+          <svg width="60" height="18" viewBox="0 0 24 24" preserveAspectRatio="none" fill="none"><path d="M4 4 L12 14 L20 4" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="60" height="18" viewBox="0 0 24 24" preserveAspectRatio="none" fill="none"><path d="M4 4 L12 14 L20 4" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="60" height="18" viewBox="0 0 24 24" preserveAspectRatio="none" fill="none"><path d="M4 4 L12 14 L20 4" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-x pb-6 pt-8">
+      <div class="grid grid-cols-4 gap-2">
+        <div class="h-[2px] rounded-full" style="background:var(--accent)"></div>
+        <div class="h-[2px] rounded-full" style="background:var(--line-strong)"></div>
+        <div class="h-[2px] rounded-full" style="background:var(--line-strong)"></div>
+        <div class="h-[2px] rounded-full" style="background:var(--line-strong)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const heroBg = document.getElementById('hero-bg-wrap');
+    const heroContent = document.getElementById('hero-content');
+    const clientes = document.getElementById('clientes');
+
+    const HERO_FADE_DISTANCE = 320; // px of scroll to fully hide the hero
+    const CLIENTES_REVEAL_DISTANCE = 320; // px over which clientes slides up + fades in
+
+    function updateScrollAnimations() {
+      const scrollY = window.scrollY;
+
+      // Hero: fades out and eases up in place over a short, fixed scroll distance.
+      const heroT = Math.min(1, Math.max(0, scrollY / HERO_FADE_DISTANCE));
+      const heroOpacity = 1 - heroT;
+      [heroBg, heroContent].forEach((el) => {
+        el.style.opacity = heroOpacity;
+        el.style.transform = `translateY(${heroT * -30}px)`;
+        el.style.pointerEvents = heroT > 0.5 ? 'none' : 'auto';
+      });
+
+      // Clientes: slides up + fades in continuously as it enters from the bottom,
+      // tied to the same scroll so there is never a blank gap between the two.
+      const clientesTop = clientes.getBoundingClientRect().top;
+      const clientesT = Math.min(1, Math.max(0, (window.innerHeight - clientesTop) / CLIENTES_REVEAL_DISTANCE));
+      clientes.style.opacity = clientesT;
+      clientes.style.transform = `translateY(${(1 - clientesT) * 50}px)`;
+    }
+
+    window.addEventListener('scroll', updateScrollAnimations, { passive: true });
+    window.addEventListener('resize', updateScrollAnimations);
+    updateScrollAnimations();
+  });
+</script>
+
+<!-- CLIENTES -->
+<section id="clientes" class="pt-10 pb-24 overflow-hidden">
+  <div class="container-x text-center mb-10">
+    <h2 class="font-bold" style="font-family:var(--font-sans);font-size:clamp(1.75rem,3vw,2.5rem)">
+      <span class="magnetic-blue-word" data-es="Mis Clientes" data-en="My Clients">Mis Clientes</span>
+    </h2>
+    <p class="mt-2 text-[var(--fg-dim)]" data-es="Creadores de contenido con los que he trabajado!" data-en="Content creators I've worked with!">Creadores de contenido con los que he trabajado!</p>
+  </div>
+
+  <div class="clientes-fade w-full overflow-hidden">
+    <div id="clientes-track" class="flex w-max" style="will-change:transform"></div>
+  </div>
+
+  <script>
+    // ✏️ TUS CLIENTES: nombre, suscriptores y foto (pon las fotos en images/canales/, cuadradas)
+    const clientes = [
+      { name: 'Emilio Villarreal', subs: '1.35K', img: 'images/canales/emilio-villarreal.jpg', url: 'https://www.youtube.com/@emiliovillarreal.s' },
+      { name: 'Marc o Editor', subs: '1.52K', img: 'images/canales/marc-o-editor.jpg', url: 'https://www.youtube.com/@marcoovfx' },
+    ];
+
+    const clienteItem = c => `
+      <a href="${c.url}" target="_blank" rel="noopener" class="client-pill flex items-center gap-3 shrink-0 mx-2 pl-3 pr-[22px] py-[11px]" style="border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line)">
+        <img src="${c.img}" class="w-[45px] h-[45px] rounded-full object-cover" style="border:1px solid var(--line-strong)" alt="${c.name}">
+        <div class="text-left leading-tight">
+          <p class="text-base font-bold">${c.name}</p>
+          <p class="mt-0.5 text-[10px] font-bold tracking-widest" style="color:var(--accent-light)">${c.subs} ${currentLang === 'es' ? 'SUSCRIPTORES' : 'SUBSCRIBERS'}</p>
+        </div>
+      </a>
+    `;
+
+    const track = document.getElementById('clientes-track');
+
+    let setWidth = 0;
+    let copies = 3;
+    function measureSetWidth() {
+      setWidth = track.scrollWidth / copies;
+    }
+    function renderClientesTrack() {
+      const html = clientes.map(clienteItem).join('');
+      track.innerHTML = html;
+      const single = track.scrollWidth || 1;
+      // Con pocos clientes repetimos la tira las veces necesarias para llenar pantallas anchas
+      copies = Math.max(3, Math.ceil(window.innerWidth / single) + 2);
+      track.innerHTML = html.repeat(copies);
+      measureSetWidth();
+    }
+    renderClientesTrack();
+    window.addEventListener('resize', measureSetWidth);
+
+    const SPEED = 40; // px per second
+    let offset = 0;
+    let lastTime = null;
+    function tick(time) {
+      if (lastTime !== null && setWidth > 0) {
+        offset -= SPEED * (time - lastTime) / 1000;
+        if (offset <= -setWidth) offset += setWidth;
+        track.style.transform = `translateX(${offset}px)`;
+      }
+      lastTime = time;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  </script>
+</section>
+
+<!-- VIDEO MODAL (kept at page level so section stacking contexts never trap it) -->
+<div id="video-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 sm:p-12" style="background:rgba(0,0,0,.9)">
+  <button id="video-modal-close" aria-label="Cerrar video" data-aria-es="Cerrar video" data-aria-en="Close video" class="btn-glow absolute top-5 right-5 sm:top-8 sm:right-8 w-10 h-10 rounded-full border flex items-center justify-center text-white text-xl" style="border-color:var(--line-strong)">✕</button>
+  <div id="video-modal-box" class="w-full" style="max-width:1100px">
+    <div class="relative aspect-video w-full rounded-[var(--radius)] overflow-hidden" style="background:#000">
+      <iframe id="video-modal-frame" class="w-full h-full" src="" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- PROYECTOS -->
+<section id="proyectos" class="spotlight-zone py-32 border-t" style="border-color:var(--line)">
+  <div class="spotlight" aria-hidden="true"></div>
+  <div class="container-x text-center mb-10 reveal">
+    <div class="label-eyebrow" data-es="PORTAFOLIO" data-en="PORTFOLIO">PORTAFOLIO</div>
+    <h2 class="mt-2" style="font-family:'widescreen','Archivo',sans-serif;font-stretch:125%;font-weight:900;font-size:clamp(1.75rem,3vw,2.5rem)"><span class="magnetic-blue-word">Reels</span> 📱</h2>
+    <p class="mt-2 text-[var(--fg-dim)]" data-es="Contenido vertical para Shorts, Reels y TikTok." data-en="Vertical content for Shorts, Reels and TikTok.">Contenido vertical para Shorts, Reels y TikTok.</p>
+  </div>
+  <div id="reels-grid" class="container-x flex flex-wrap justify-center gap-8"></div>
+
+  <div class="container-x text-center mt-28 mb-16 reveal">
+    <h2 style="font-family:'widescreen','Archivo',sans-serif;font-stretch:125%;font-weight:900;font-size:clamp(1.75rem,3vw,2.5rem)"><span data-es="Mis mejores " data-en="My best ">Mis mejores </span><span class="magnetic-blue-word" data-es="vídeos" data-en="videos">vídeos</span> 💎</h2>
+  </div>
+
+  <div id="proyectos-grid" class="container-x grid grid-cols-1 sm:grid-cols-2 gap-8"></div>
+
+  <script>
+    // ✏️ TUS VÍDEOS DE YOUTUBE. "id" es el código del enlace: youtube.com/watch?v=ESTE_CODIGO
+    //    o youtube.com/shorts/ESTE_CODIGO. La miniatura se carga sola desde YouTube.
+    //    vertical: true → va en la fila de "Reels" (Shorts / vídeos 9:16).
+    const proyectosVideos = [
+      { id: '5LLmFgini-I', category: 'YOUTUBE', title: '24 horas siendo editor del Maestro Shifu', titleEn: '24 hours as Master Shifu\'s editor', author: 'Marc o Editor' },
+      { id: 'SfsHZRi8fhk', category: 'YOUTUBE', title: 'Deja de trabajar con estos creadores, mejor edita para estos', titleEn: 'Stop working with these creators, edit for these instead', author: 'Marc o Editor' },
+      { id: 'W-9B20fAtbY', vertical: true, category: 'REEL', title: 'Reel', titleEn: 'Reel', author: 'ADN' },
+      { id: 'UayQx7Z_CY4', vertical: true, category: 'REEL', title: 'Reel para Emilio Villarreal', titleEn: 'Reel for Emilio Villarreal', author: 'Emilio Villarreal' },
+    ];
+
+    function playProjectVideo(i) {
+      const v = proyectosVideos[i];
+      const frame = document.getElementById('video-modal-frame');
+      frame.src = `https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`;
+      frame.title = v.title;
+      const box = document.getElementById('video-modal-box');
+      box.style.maxWidth = v.vertical ? 'min(420px, calc(85vh * 9 / 16))' : '1100px';
+      box.firstElementChild.style.aspectRatio = v.vertical ? '9 / 16' : '16 / 9';
+      const modal = document.getElementById('video-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      document.getElementById('video-modal-frame').src = '';
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    function renderProyectosGrid() {
+      const firstRender = !window.__proyectosRendered;
+      const grid = document.getElementById('proyectos-grid');
+      const reels = document.getElementById('reels-grid');
+      const card = (v, i) => {
+        const thumb = v.vertical
+          ? `<img src="https://i.ytimg.com/vi/${v.id}/oar2.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'" class="w-full h-full object-cover" alt="" loading="lazy">`
+          : `<img src="https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg" onload="if(this.naturalWidth<=120){this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'}" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'" class="w-full h-full object-cover" alt="" loading="lazy">`;
+        return `
+        <article class="overflow-hidden group shimmer-card${firstRender ? ' reveal' : ''}" style="${v.vertical ? 'width:min(300px,100%);' : ''}border-radius:16px;border:1px solid var(--line);background:var(--bg-elev)${firstRender ? ';transition-delay:' + (i * 80) + 'ms' : ''}">
+          <div class="relative overflow-hidden bg-black" style="aspect-ratio:${v.vertical ? '9 / 16' : '16 / 9'}">
+            ${thumb}
+
+            <button onclick="playProjectVideo(${i})" aria-label="${currentLang === 'es' ? 'Reproducir video' : 'Play video'}" class="absolute inset-0 flex items-center justify-center">
+              <span class="absolute inset-0 bg-black/10 group-hover:bg-black/35 transition"></span>
+              <span class="relative w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all group-hover:scale-110 group-hover:shadow-[0_0_28px_6px_rgba(168,85,247,.65)]" style="background:var(--accent)">
+                <svg class="transition-opacity duration-200 group-hover:opacity-0" width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                <span class="absolute inset-0 flex items-center justify-center gap-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
+                </span>
+              </span>
+            </button>
+          </div>
+
+          <div class="px-5 py-4">
+            <h3 class="font-bold text-white leading-snug" style="font-size:1.0625rem">${currentLang === 'es' ? v.title : v.titleEn}</h3>
+            <p class="mt-2 flex items-center gap-1.5 text-[var(--fg-dim)]" style="font-size:.8125rem">
+              ${v.author}
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 2l2.39 1.94 3.06-.4.6 3.05 2.75 1.52-1.09 2.9 1.09 2.9-2.75 1.52-.6 3.05-3.06-.4L12 22l-2.39-1.94-3.06.4-.6-3.05-2.75-1.52 1.09-2.9-1.09-2.9 2.75-1.52.6-3.05 3.06.4z"/><path d="M9 12l2 2 4-4" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </p>
+          </div>
+        </article>
+      `;
+      };
+      grid.innerHTML = proyectosVideos.map((v, i) => v.vertical ? '' : card(v, i)).join('');
+      reels.innerHTML = proyectosVideos.map((v, i) => v.vertical ? card(v, i) : '').join('');
+      if (firstRender) {
+        window.__proyectosRendered = true;
+        if (window.__observeReveals) { window.__observeReveals(grid); window.__observeReveals(reels); }
+      }
+    }
+    renderProyectosGrid();
+
+    document.getElementById('video-modal-close').addEventListener('click', closeVideoModal);
+    document.getElementById('video-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'video-modal') closeVideoModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeVideoModal();
+    });
+  </script>
+
+  <div class="container-x text-center mt-24 reveal">
+    <a href="https://x.com/adangarcia5544" target="_blank" rel="noopener" class="btn-glow btn-fire inline-flex items-center gap-2 rounded-full px-8 py-4 text-white font-medium" style="background:var(--accent)" data-es="TRABAJEMOS JUNTOS 🔥 →" data-en="LET'S WORK TOGETHER 🔥 →">TRABAJEMOS JUNTOS 🔥 →</a>
+  </div>
+</section>
+
+
+<!-- HABLEMOS -->
+<!-- ✏️ CONTACTO: tu X es @adangarcia5544 (también en los botones "Trabajemos juntos" de arriba) -->
+<section id="contacto" class="spotlight-zone py-56 border-t" style="border-color:var(--line);position:relative">
+  <div class="spotlight" aria-hidden="true"></div>
+  <div class="container-x text-center reveal">
+    <h2 class="font-display text-[length:var(--text-display-1)] leading-[0.85] text-white" data-es="Hablemos" data-en="Let's Talk">Hablemos</h2>
+    <p class="mt-6 text-[var(--fg-dim)] max-w-md mx-auto" data-es="Escríbeme por X y te contesto rápido. Cuéntame qué video tienes en mente." data-en="Message me on X and I'll get back to you fast. Tell me what video you have in mind.">Escríbeme por X y te contesto rápido. Cuéntame qué video tienes en mente.</p>
+
+    <a href="https://x.com/adangarcia5544" target="_blank" rel="noopener" class="btn-glow btn-fire mt-10 max-w-md mx-auto flex items-center gap-4 rounded-[var(--radius)] border p-5 relative overflow-hidden" style="border-color:var(--accent);background:var(--bg-elev)">
+      <span class="font-display text-3xl">𝕏</span>
+      <span class="text-left flex-1">
+        <span class="block font-bold">@adangarcia5544</span>
+        <span class="block font-mono text-[.625rem] tracking-widest text-[var(--fg-dim)] mt-1" data-es="MÁNDAME UN DM — ES LA VÍA MÁS RÁPIDA" data-en="SEND ME A DM — IT'S THE FASTEST WAY">MÁNDAME UN DM — ES LA VÍA MÁS RÁPIDA</span>
+      </span>
+      <span class="contact-arrow w-9 h-9 rounded-full border flex items-center justify-center" style="border-color:var(--accent)">↗</span>
+      <span class="contact-bar absolute bottom-0 left-0 h-[2px] w-1/3" style="background:var(--accent)"></span>
+    </a>
+  </div>
+</section>
+
+<!-- CUSTOM CURSOR -->
+<div id="custom-cursor" class="fixed top-0 left-0 pointer-events-none z-[9999]" style="transform:translate(-50%,-50%);opacity:0;">
+  <div id="cursor-face" class="rounded-full flex items-center justify-center" style="width:44px;height:44px;border:2px solid rgba(255,255,255,.4);background:rgba(20,20,23,.3);transition:width .15s ease, height .15s ease, border-color .15s ease, background .15s ease;">
+    <svg id="cursor-face-default" width="32" height="32" viewBox="0 0 24 24" fill="none">
+      <g id="cursor-eyes">
+        <circle cx="7.5" cy="8" r="1.8" fill="rgba(255,255,255,.75)"/>
+        <circle cx="16.5" cy="8" r="1.8" fill="rgba(255,255,255,.75)"/>
+      </g>
+      <path d="M7 17c1.1 1.1 2.9 1.7 5 1.7s3.9-.6 5-1.7" stroke="rgba(255,255,255,.75)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span id="cursor-face-hover" class="hidden" style="font-size:34px;line-height:1;">🤩</span>
+  </div>
+</div>
+
+<style>
+  @media (hover:hover) and (pointer:fine) {
+    html.has-custom-cursor, html.has-custom-cursor a, html.has-custom-cursor button { cursor:none !important; }
+  }
+  @keyframes cursor-vibrate {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    20%  { transform: translate(-2px,1px) rotate(-6deg); }
+    40%  { transform: translate(2px,-2px) rotate(5deg); }
+    60%  { transform: translate(-1px,2px) rotate(-4deg); }
+    80%  { transform: translate(2px,1px) rotate(6deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+  #custom-cursor.hovering #cursor-face {
+    border-color: rgba(255,255,255,.9) !important;
+    border-width: 3px !important;
+    background: #9333EA !important;
+    box-shadow: 0 0 18px rgba(168,85,247,.7);
+    animation: cursor-vibrate .12s linear infinite;
+  }
+</style>
+
+<script>
+  (function () {
+    if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+    document.documentElement.classList.add('has-custom-cursor');
+
+    const cursor = document.getElementById('custom-cursor');
+    const faceDefault = document.getElementById('cursor-face-default');
+    const faceHover = document.getElementById('cursor-face-hover');
+    const eyes = document.getElementById('cursor-eyes');
+
+    let mouseX = 0, mouseY = 0;
+    let magnetEl = null;
+
+    // Eye tracking: eyes drift toward the nearest interactive element as the cursor nears it.
+    // Optimized: the element list is cached (rescanned only ~twice/sec and on resize) and the
+    // nearest-element search runs ~6x/sec instead of every frame, so the getBoundingClientRect
+    // reads no longer thrash layout while the client marquee animates. The marquee pills are
+    // excluded from the search since they move constantly and aren't worth tracking.
+    const EYE_TRACK_SELECTOR = 'a, button, [role="button"], .shimmer-card, input, textarea, select, label';
+    const EYE_TRACK_MAX_DIST = 480;
+    const MAX_EYE_OFFSET = 3.4;
+    let eyeTargetX = 0, eyeTargetY = 0;
+    let eyeCurX = 0, eyeCurY = 0;
+    let eyeFrame = 0;
+    let eyeEls = [];
+    function refreshEyeEls() { eyeEls = Array.prototype.slice.call(document.querySelectorAll(EYE_TRACK_SELECTOR)); }
+    refreshEyeEls();
+    window.addEventListener('resize', refreshEyeEls);
+
+    function updateEyeTarget() {
+      let nearestD2 = Infinity, nearestCx = 0, nearestCy = 0;
+      for (let i = 0; i < eyeEls.length; i++) {
+        const r = eyeEls[i].getBoundingClientRect();
+        if (!r.width && !r.height) continue;
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const dx = cx - mouseX, dy = cy - mouseY;
+        const d2 = dx * dx + dy * dy;            // squared distance — no sqrt in the hot loop
+        if (d2 < nearestD2) { nearestD2 = d2; nearestCx = cx; nearestCy = cy; }
+      }
+      const nearest = Math.sqrt(nearestD2);
+      if (nearest < EYE_TRACK_MAX_DIST) {
+        const dx = nearestCx - mouseX, dy = nearestCy - mouseY;
+        const dist = Math.max(1, Math.hypot(dx, dy));
+        const strength = 1 - Math.min(1, nearest / EYE_TRACK_MAX_DIST);
+        eyeTargetX = (dx / dist) * MAX_EYE_OFFSET * strength;
+        eyeTargetY = (dy / dist) * MAX_EYE_OFFSET * strength;
+      } else {
+        eyeTargetX = 0;
+        eyeTargetY = 0;
+      }
+    }
+
+    function eyeLoop() {
+      if (!document.hidden) {
+        if (eyeFrame % 120 === 0) refreshEyeEls();   // re-scan the DOM only ~twice/sec
+        if (eyeFrame % 10 === 0) updateEyeTarget();    // recompute nearest ~6x/sec
+        eyeFrame++;
+        eyeCurX += (eyeTargetX - eyeCurX) * 0.15;
+        eyeCurY += (eyeTargetY - eyeCurY) * 0.15;
+        eyes.setAttribute('transform', `translate(${eyeCurX.toFixed(2)},${eyeCurY.toFixed(2)})`);
+      }
+      requestAnimationFrame(eyeLoop);
+    }
+    requestAnimationFrame(eyeLoop);
+
+    // The cursor trails the pointer with inertia (a Mac-like "gravity" lag):
+    // each frame it eases toward the target instead of snapping to it, so a fast
+    // flick keeps gliding for a moment after the mouse stops.
+    let curX = 0, curY = 0, started = false, visible = false;
+    const FOLLOW = 0.18; // lower = heavier trail
+
+    function computeTarget() {
+      let x = mouseX, y = mouseY, opacity = 1;
+      if (magnetEl) {
+        const r = magnetEl.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const dx = cx - mouseX, dy = cy - mouseY;
+        const dist = Math.hypot(dx, dy);
+        const maxDist = Math.max(r.width, r.height) * 1.4 + 60;
+        const closeness = Math.max(0, 1 - dist / maxDist);
+        const pull = Math.min(1, closeness * 1.3);
+        x = mouseX + dx * pull;
+        y = mouseY + dy * pull;
+        opacity = 1 - Math.min(1, pull * 1.15);
+      }
+      return { x, y, opacity };
+    }
+
+    function cursorLoop() {
+      if (visible) {
+        const t = computeTarget();
+        if (!started) { curX = t.x; curY = t.y; started = true; }
+        curX += (t.x - curX) * FOLLOW;
+        curY += (t.y - curY) * FOLLOW;
+        cursor.style.left = curX + 'px';
+        cursor.style.top = curY + 'px';
+        cursor.style.opacity = String(t.opacity);
+      } else {
+        cursor.style.opacity = '0';
+      }
+      requestAnimationFrame(cursorLoop);
+    }
+    requestAnimationFrame(cursorLoop);
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      visible = true;
+    });
+    document.addEventListener('mouseleave', () => { visible = false; });
+
+    document.querySelectorAll('.magnetic-blue-word').forEach((el) => {
+      el.addEventListener('mouseenter', () => { magnetEl = el; });
+      el.addEventListener('mouseleave', () => { magnetEl = null; });
+    });
+
+    const HOVER_SELECTOR = 'a, button, [role="button"], input, textarea, select, label';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(HOVER_SELECTOR)) {
+        cursor.classList.add('hovering');
+        faceDefault.classList.add('hidden');
+        faceHover.classList.remove('hidden');
+      }
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest(HOVER_SELECTOR)) {
+        cursor.classList.remove('hovering');
+        faceDefault.classList.remove('hidden');
+        faceHover.classList.add('hidden');
+      }
+    });
+  })();
+</script>
+
+<!-- FIRE IGNITION — CTA button particles -->
+<script>
+  (function () {
+    const buttons = document.querySelectorAll('.btn-fire');
+    if (!buttons.length) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    buttons.forEach((btn) => {
+      const canvas = document.createElement('canvas');
+      canvas.className = 'fire-canvas';
+      btn.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+
+      let particles = [];
+      let active = false;
+      let raf = null;
+      let w = 0, h = 0;
+
+      function resize() {
+        const rect = btn.getBoundingClientRect();
+        w = rect.width + 16;
+        h = rect.height + 60;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      function spawn() {
+        particles.push({
+          x: w / 2 + (Math.random() - 0.5) * w * 0.6,
+          y: h - 18,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: -(0.5 + Math.random() * 0.9),
+          r: 1.3 + Math.random() * 2.2,
+          life: 0,
+          maxLife: 38 + Math.random() * 26,
+          hue: Math.random() < 0.55 ? '168,85,247' : '255,255,255',
+        });
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, w, h);
+        if (active && Math.random() < 0.55) spawn();
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy -= 0.008;
+          p.life++;
+          const t = p.life / p.maxLife;
+          const alpha = Math.max(0, 1 - t);
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(${p.hue},${alpha})`;
+          ctx.shadowColor = `rgba(${p.hue},${alpha})`;
+          ctx.shadowBlur = 6;
+          ctx.arc(p.x, p.y, p.r * (1 - t * 0.5), 0, Math.PI * 2);
+          ctx.fill();
+        });
+        particles = particles.filter((p) => p.life < p.maxLife);
+        if (active || particles.length) {
+          raf = requestAnimationFrame(loop);
+        } else {
+          raf = null;
+        }
+      }
+
+      btn.addEventListener('mouseenter', () => {
+        active = true;
+        resize();
+        if (!raf) raf = requestAnimationFrame(loop);
+      });
+      btn.addEventListener('mouseleave', () => { active = false; });
+    });
+  })();
+</script>
+
+
+<!-- SLOW SMOOTH SCROLL — anchor links -->
+<script>
+  (function () {
+    function easeInOutCubic(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+
+    document.addEventListener('click', function (e) {
+      const link = e.target.closest('a[href^="#"]');
+      if (!link) return;
+      const id = link.getAttribute('href').slice(1);
+      if (!id) return;
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      e.preventDefault();
+      const startY = window.scrollY;
+      const targetY = target.getBoundingClientRect().top + startY - 90;
+      const distance = targetY - startY;
+      const duration = 1100;
+      let startTime = null;
+
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  })();
+</script>
+
+<!-- LANGUAGE TOGGLE -->
+<script>
+  function applyLanguage(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll('[data-es][data-en]').forEach((el) => {
+      el.textContent = lang === 'es' ? el.getAttribute('data-es') : el.getAttribute('data-en');
+    });
+    document.querySelectorAll('[data-aria-es][data-aria-en]').forEach((el) => {
+      el.setAttribute('aria-label', lang === 'es' ? el.getAttribute('data-aria-es') : el.getAttribute('data-aria-en'));
+    });
+
+    if (typeof renderClientesTrack === 'function') renderClientesTrack();
+    if (typeof renderProyectosGrid === 'function') renderProyectosGrid();
+
+    const esBtn = document.getElementById('lang-es-btn');
+    const enBtn = document.getElementById('lang-en-btn');
+    if (esBtn && enBtn) {
+      esBtn.classList.toggle('lang-active', lang === 'es');
+      enBtn.classList.toggle('lang-active', lang === 'en');
+    }
+  }
+</script>
+
+<!-- SPOTLIGHT + REVEAL REGISTRATION -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Register every remaining reveal element (headers, cards, etc.)
+    if (window.__observeReveals) window.__observeReveals(document);
+
+    // Spotlight: a soft radial glow that tracks the cursor, confined to each .spotlight-zone section.
+    // Cheap by design — a mousemove (throttled to one rAF) just writes two CSS variables,
+    // so the browser only recomposites the gradient layer; there is no per-frame loop.
+    if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+
+    document.querySelectorAll('.spotlight-zone').forEach(function (zone) {
+      const spot = zone.querySelector('.spotlight');
+      if (!spot) return;
+      let px = 0, py = 0, pending = false;
+      function apply() {
+        pending = false;
+        spot.style.setProperty('--mx', px + 'px');
+        spot.style.setProperty('--my', py + 'px');
+      }
+      zone.addEventListener('mousemove', function (e) {
+        const r = zone.getBoundingClientRect();
+        px = e.clientX - r.left;
+        py = e.clientY - r.top;
+        if (!pending) { pending = true; requestAnimationFrame(apply); }
+      }, { passive: true });
+    });
+  });
+</script>
+
+</body>
+</html>

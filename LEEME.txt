@@ -1,0 +1,38 @@
+PLANTILLA DE PORTFOLIO PARA EDITORES DE VÍDEO
+==============================================
+
+CÓMO VERLA
+----------
+- Mac: abre la Terminal, arrastra el archivo preview.sh a la ventana y pulsa Enter.
+  (Si no te deja: escribe "bash " antes de arrastrarlo.)
+  Se abrirá en el navegador en http://localhost:8080
+- Windows: abre una terminal en esta carpeta y ejecuta:  python -m http.server 8080
+  y abre http://localhost:8080 en el navegador.
+
+  Ojo: si abres index.html con doble clic, los vídeos de YouTube no se reproducen.
+  Usa siempre uno de los métodos de arriba.
+
+QUÉ CAMBIAR
+-----------
+Todo está en index.html. Ábrelo con cualquier editor de texto (VS Code recomendado)
+y busca el símbolo ✏️: cada comentario indica algo que debes personalizar.
+
+1. Tu nombre, en el título de la pestaña, la barra de arriba y el texto grande del inicio.
+2. Tu foto: sustituye images/marca/avatar.jpg (cuadrada), con el mismo nombre de archivo.
+3. Vídeo de fondo: sustituye video/hero-bg.mp4 y su miniatura images/hero-video-poster.jpg.
+4. Clientes: edita la lista "const clientes" y pon sus fotos en images/canales/.
+5. Vídeos: edita la lista "const proyectosVideos" con los ids de tus vídeos de YouTube
+   (el id es lo que va después de "watch?v=" en el enlace).
+6. Testimonios: fotos en images/testimonios/ e images/caso-exito/, y textos en el HTML.
+   Cada texto está 3 veces: data-es (español), data-en (inglés) y el texto visible.
+7. Redes: cambia "tuusuario" por tu usuario de X e Instagram.
+8. Color principal: cambia --accent al principio del <style>.
+9. Vista previa al compartir el enlace: cambia "tudominio.com" y images/marca/og-image.jpg.
+
+CONSEJO: si sustituyes las imágenes por otras con el mismo nombre, no tendrás que tocar
+el código.
+
+PUBLICARLA GRATIS
+-----------------
+- Netlify Drop: entra en app.netlify.com/drop y arrastra esta carpeta.
+- GitHub Pages o Vercel también funcionan.
